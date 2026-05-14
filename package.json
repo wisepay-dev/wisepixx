@@ -9,7 +9,7 @@
     "dev": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",
-    "pages.build": "npx @cloudflare/next-on-pages",
+    "pages:build": "npx @cloudflare/next-on-pages",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "prisma:generate": "prisma generate",
