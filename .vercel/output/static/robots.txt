@@ -1,8 +1,0 @@
-User-Agent: *
-Allow: /
-Disallow: /api/
-Disallow: /admin
-Disallow: /owner
-Disallow: /dashboard
-
-Sitemap: https://wisepix.online/sitemap.xml

@@ -72,5 +72,4 @@ Isso evita QR Code fake e impede que a plataforma pareça integrada sem estar.
 - [Supabase](docs/setup-supabase.md)
 - [Miuse](docs/setup-miuse.md)
 - [Discord Bot](docs/setup-discord-bot.md)
-- [Deploy Cloudflare](docs/deploy-cloudflare.md)
 - [Deploy SquareCloud](docs/deploy-squarecloud.md)
