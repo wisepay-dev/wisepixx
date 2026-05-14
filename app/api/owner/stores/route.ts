@@ -7,8 +7,6 @@ import { canAccessOwner } from "@/lib/permissions";
 import { isReservedSubdomain } from "@/lib/subdomains";
 import { storeSchema } from "@/lib/validation";
 
-export const runtime = "edge";
-
 export async function POST(request: NextRequest) {
   const session = await auth();
   if (!canAccessOwner(session?.user?.roles)) return NextResponse.json({ error: "Apenas OWNER" }, { status: 403 });

@@ -5,7 +5,6 @@ import { ListingCard } from "@/components/listing-card";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
-export const runtime = "edge";
 
 export default async function StorePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

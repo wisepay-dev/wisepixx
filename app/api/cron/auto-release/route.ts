@@ -3,7 +3,6 @@ import { OrderStatus } from "@prisma/client";
 import { auditLog } from "@/lib/audit";
 import { prisma } from "@/lib/prisma";
 
-export const runtime = "edge";
 
 export async function POST(request: NextRequest) {
   const secret = process.env.CRON_SECRET;

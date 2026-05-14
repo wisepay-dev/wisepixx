@@ -4,7 +4,6 @@ import { ListingCard } from "@/components/listing-card";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
-export const runtime = "edge";
 
 export default async function MarketplacePage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const params = await searchParams;

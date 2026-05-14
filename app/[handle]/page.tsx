@@ -5,7 +5,6 @@ import { ListingCard } from "@/components/listing-card";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
-export const runtime = "edge";
 
 export default async function HandlePage({ params }: { params: Promise<{ handle: string }> }) {
   const { handle } = await params;

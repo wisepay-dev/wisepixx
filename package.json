@@ -9,7 +9,6 @@
     "dev": "next dev",
     "build": "prisma generate && next build",
     "start": "next start",
-    "pages:build": "npx @cloudflare/next-on-pages",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "prisma:generate": "prisma generate",
@@ -40,7 +39,6 @@
     "zod": "^3.25.56"
   },
   "devDependencies": {
-    "@cloudflare/next-on-pages": "^1.13.16",
     "@tailwindcss/forms": "^0.5.10",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^22.15.29",

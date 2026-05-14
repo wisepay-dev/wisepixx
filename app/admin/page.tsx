@@ -6,7 +6,6 @@ import { canAccessAdmin } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
-export const runtime = "edge";
 
 export default async function AdminPage() {
   const session = await auth();

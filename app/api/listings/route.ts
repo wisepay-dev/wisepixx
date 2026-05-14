@@ -6,7 +6,6 @@ import { prisma } from "@/lib/prisma";
 import { sanitizeText, slugify } from "@/lib/sanitize";
 import { listingSchema } from "@/lib/validation";
 
-export const runtime = "edge";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;

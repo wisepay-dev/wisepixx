@@ -9,7 +9,6 @@ import { getMiuseBalance, type MiuseBalanceView } from "@/lib/miuse";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
-export const runtime = "edge";
 
 export default async function SellerDashboardPage() {
   const session = await auth();

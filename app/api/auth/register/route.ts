@@ -5,7 +5,6 @@ import { registerSchema } from "@/lib/validation";
 import { rateLimit } from "@/lib/rate-limit";
 import { getClientIp } from "@/lib/analytics";
 
-export const runtime = "edge";
 
 export async function POST(request: NextRequest) {
   const limited = rateLimit(`register:${getClientIp(request) ?? "unknown"}`, 5, 60_000);

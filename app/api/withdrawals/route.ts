@@ -5,7 +5,6 @@ import { calculateFeeCents, getSellerFees } from "@/lib/fees";
 import { createMiuseWithdrawal } from "@/lib/miuse";
 import { prisma } from "@/lib/prisma";
 
-export const runtime = "edge";
 
 const withdrawalSchema = z.object({
   amountCents: z.number().int().min(100),

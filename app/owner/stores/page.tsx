@@ -5,7 +5,6 @@ import { canAccessOwner } from "@/lib/permissions";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
-export const runtime = "edge";
 
 export default async function OwnerStoresPage() {
   const session = await auth();

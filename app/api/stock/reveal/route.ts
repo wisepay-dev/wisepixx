@@ -6,7 +6,6 @@ import { decryptSecret, hashIp } from "@/lib/crypto";
 import { getAutoReleaseAt } from "@/lib/orders";
 import { prisma } from "@/lib/prisma";
 
-export const runtime = "edge";
 
 export async function POST(request: NextRequest) {
   const session = await auth();

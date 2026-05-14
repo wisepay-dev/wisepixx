@@ -5,7 +5,6 @@ import { verifyHmacSha256 } from "@/lib/crypto";
 import { notifyUser } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
 
-export const runtime = "edge";
 
 const PAYMENT_PAID = "payment.paid";
 const SUPPORTED_EVENTS = new Set([
