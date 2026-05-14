@@ -1,0 +1,20 @@
+{
+  "name": "WisePix",
+  "short_name": "WisePix",
+  "description": "Marketplace social Pix-first para produtos digitais.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f8fbff",
+  "theme_color": "#1687ff",
+  "categories": ["business", "shopping", "social"],
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
