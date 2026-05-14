@@ -7,7 +7,6 @@ import { formatCurrency } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
-export const runtime = "edge";
 
 export default async function HomePage() {
   const [listings, posts, stats] = await Promise.all([
