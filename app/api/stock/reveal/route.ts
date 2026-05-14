@@ -6,6 +6,8 @@ import { decryptSecret, hashIp } from "@/lib/crypto";
 import { getAutoReleaseAt } from "@/lib/orders";
 import { prisma } from "@/lib/prisma";
 
+export const runtime = "edge";
+
 export async function POST(request: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
@@ -40,7 +42,7 @@ export async function POST(request: NextRequest) {
           status: StockStatus.SOLD,
           soldOrderId: order.id,
           revealedAt: deliveredAt,
-          revealIpHash: hashIp(getClientIp(request)),
+          revealIpHash: await hashIp(getClientIp(request)),
           revealUserAgent: request.headers.get("user-agent")
         }
       });
@@ -64,7 +66,7 @@ export async function POST(request: NextRequest) {
       where: { id: stock.id },
       data: {
         revealedAt: new Date(),
-        revealIpHash: hashIp(getClientIp(request)),
+        revealIpHash: await hashIp(getClientIp(request)),
         revealUserAgent: request.headers.get("user-agent")
       }
     });
@@ -72,7 +74,7 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({
     secretType: stock.secretType,
-    secret: decryptSecret(stock.encryptedSecret),
+    secret: await decryptSecret(stock.encryptedSecret),
     revealedAt: stock.revealedAt
   });
 }

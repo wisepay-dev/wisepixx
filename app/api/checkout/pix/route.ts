@@ -6,6 +6,8 @@ import { calculateFeeCents, getSellerFees } from "@/lib/fees";
 import { createMiusePayment, normalizeMiusePayment } from "@/lib/miuse";
 import { prisma } from "@/lib/prisma";
 
+export const runtime = "edge";
+
 const checkoutSchema = z.object({
   listingId: z.string().min(1),
   variantId: z.string().optional()

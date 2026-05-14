@@ -6,6 +6,7 @@ import { formatCurrency } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
+export const runtime = "edge";
 
 export default async function CheckoutPage({ searchParams }: { searchParams: Promise<{ listingId?: string }> }) {
   const session = await auth();

@@ -5,6 +5,8 @@ import { verifyHmacSha256 } from "@/lib/crypto";
 import { notifyUser } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
 
+export const runtime = "edge";
+
 const PAYMENT_PAID = "payment.paid";
 const SUPPORTED_EVENTS = new Set([
   PAYMENT_PAID,
@@ -24,7 +26,7 @@ export async function POST(request: NextRequest) {
   const secret = process.env.MIUSE_WEBHOOK_SECRET;
   if (!secret) return NextResponse.json({ error: "MIUSE_WEBHOOK_SECRET ausente" }, { status: 500 });
 
-  const valid = verifyHmacSha256(rawBody, request.headers.get("x-webhook-signature"), secret);
+  const valid = await verifyHmacSha256(rawBody, request.headers.get("x-webhook-signature"), secret);
   if (!valid) return NextResponse.json({ error: "Assinatura inválida" }, { status: 401 });
 
   const event = JSON.parse(rawBody) as {

@@ -46,7 +46,7 @@ export async function recordPageView(request: NextRequest, userId?: string | nul
       userId,
       sessionId,
       path: request.nextUrl.pathname,
-      ipHash: hashIp(getClientIp(request)),
+      ipHash: await hashIp(getClientIp(request)),
       userAgent,
       referrer: request.headers.get("referer"),
       ...parsed

@@ -5,6 +5,8 @@ import { auditLog } from "@/lib/audit";
 import { getAutoReleaseAt } from "@/lib/orders";
 import { prisma } from "@/lib/prisma";
 
+export const runtime = "edge";
+
 export async function POST(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Não autenticado" }, { status: 401 });

@@ -1,0 +1,21 @@
+{
+  "runtime": "edge",
+  "name": "anuncio/[slug]",
+  "deploymentTarget": "v8-worker",
+  "entrypoint": "index.js",
+  "assets": [],
+  "framework": {
+    "slug": "nextjs",
+    "version": "15.4.11"
+  },
+  "environment": {
+    "__NEXT_BUILD_ID": "0dwNZLgWbb0mKXnwGFLO8",
+    "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "oJQPdNDia3dBEecyzlt35W40jKUNKXi400WcrSJpsCg=",
+    "__NEXT_PREVIEW_MODE_ID": "9cb501b1e534487de6b34434b61417b8",
+    "__NEXT_PREVIEW_MODE_SIGNING_KEY": "a366900baad7593797fabf10b6487ccf4ef230c21d0b0f6c313641d826d0a52d",
+    "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "b33ee2e008462508893debdcb867292728d065b90c6425192f216ccf4e6288f8"
+  },
+  "filePathMap": {
+    "wasm/wasm_f4b69850bc2f6b02c2a186cea508d821c6b30f98.wasm": ".next/server/edge-chunks/wasm_f4b69850bc2f6b02c2a186cea508d821c6b30f98.wasm"
+  }
+}

@@ -1,5 +1,7 @@
 import { MobileShell } from "@/components/mobile-shell";
 
+export const runtime = "edge";
+
 export default function PrivacyPage() {
   return (
     <MobileShell>

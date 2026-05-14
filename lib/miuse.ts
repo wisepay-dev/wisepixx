@@ -86,7 +86,7 @@ export async function createSellerAccessToken(userId: string) {
 
   return {
     walletId,
-    encryptedToken: encryptSecret(response.token),
+    encryptedToken: await encryptSecret(response.token),
     accessTokenId: response.id
   };
 }
