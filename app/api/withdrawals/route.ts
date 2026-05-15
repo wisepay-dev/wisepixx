@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
       where: { id: withdrawal.id },
       data: {
         status: "FAILED",
-        failureReason: error instanceof Error ? error.message : "Falha ao criar saque na Miuse"
+        failureReason: error instanceof Error ? error.message : "Falha ao criar saque no parceiro de pagamento"
       }
     });
     return NextResponse.json({ withdrawal: failed, error: failed.failureReason }, { status: 502 });

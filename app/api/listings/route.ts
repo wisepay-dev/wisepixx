@@ -2,12 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { DeliveryType, ListingStatus, UserRole } from "@prisma/client";
 import { auth } from "@/lib/auth";
 import { auditLog } from "@/lib/audit";
+import { canShowPublicSeedData } from "@/lib/environment";
 import { prisma } from "@/lib/prisma";
 import { sanitizeText, slugify } from "@/lib/sanitize";
 import { listingSchema } from "@/lib/validation";
 
 
 export async function GET(request: NextRequest) {
+  if (!canShowPublicSeedData) return NextResponse.json({ listings: [] });
+
   const { searchParams } = request.nextUrl;
   const q = searchParams.get("q")?.trim();
   const category = searchParams.get("category");

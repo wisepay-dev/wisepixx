@@ -3,7 +3,7 @@ import { Bell, Home, PlusCircle, Search, ShieldCheck, Store, UserRound } from "l
 import { auth } from "@/lib/auth";
 
 const navItems = [
-  { href: "/", label: "Feed", icon: Home },
+  { href: "/", label: "Início", icon: Home },
   { href: "/marketplace", label: "Buscar", icon: Search },
   { href: "/vender", label: "Vender", icon: PlusCircle },
   { href: "/dashboard/vendedor", label: "Saldo", icon: Store },

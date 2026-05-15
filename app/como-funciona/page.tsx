@@ -9,9 +9,9 @@ export default function HowItWorksPage() {
         <h2>Venda</h2>
         <p>Crie um anúncio, escolha categoria, preço fixo ou negociável, tipo de entrega e publique para a comunidade.</p>
         <h2>Pagamento</h2>
-        <p>O checkout usa Miuse para Pix, split, wallets, webhooks e saques. Não há Pix simulado.</p>
+        <p>Pagamentos e saques serão processados por parceiros de pagamento integrados.</p>
         <h2>Entrega</h2>
-        <p>Na entrega manual, comprador e vendedor seguem pelo chat. Na automática, o estoque secreto criptografado é liberado após pagamento aprovado.</p>
+        <p>Na entrega manual, comprador e vendedor seguem pelo chat. Na automática, o conteúdo combinado pode ser liberado após pagamento aprovado.</p>
       </article>
     </MobileShell>
   );

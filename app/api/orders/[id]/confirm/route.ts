@@ -17,7 +17,7 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
 
   if (!order || order.buyerId !== session.user.id) return NextResponse.json({ error: "Pedido não encontrado" }, { status: 404 });
   if (order.status !== OrderStatus.DELIVERED) return NextResponse.json({ error: "Pedido ainda não está em entrega." }, { status: 400 });
-  if (order.dispute) return NextResponse.json({ error: "Pedido em disputa permanece locked na Miuse." }, { status: 409 });
+  if (order.dispute) return NextResponse.json({ error: "Pedido em disputa permanece em análise." }, { status: 409 });
 
   const updated = await prisma.order.update({
     where: { id: order.id },

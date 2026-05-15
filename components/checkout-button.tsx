@@ -20,7 +20,7 @@ export function CheckoutButton({ listingId }: { listingId: string }) {
       setMessage(body.error ?? "Falha ao gerar Pix.");
       return;
     }
-    setMessage("Pedido criado. Aguardando retorno da Miuse.");
+    setMessage("Pedido criado. Aguardando confirmação do parceiro de pagamento.");
   }
 
   return (

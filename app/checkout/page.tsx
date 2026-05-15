@@ -31,7 +31,7 @@ export default async function CheckoutPage({ searchParams }: { searchParams: Pro
         </div>
         <div className="mt-5">
           <p className="mb-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm font-semibold text-amber-900">
-            A rota usa a integração real Miuse. O QR Code só será exibido após confirmar o contrato oficial do endpoint Pix.
+            O Pix será gerado pela integração de pagamento quando o checkout público estiver habilitado.
           </p>
           <CheckoutButton listingId={listing.id} />
         </div>

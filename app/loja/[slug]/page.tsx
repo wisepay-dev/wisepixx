@@ -1,13 +1,16 @@
 import { notFound } from "next/navigation";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Store } from "lucide-react";
+import { EmptyState } from "@/components/empty-state";
 import { MobileShell } from "@/components/mobile-shell";
 import { ListingCard } from "@/components/listing-card";
+import { canShowPublicSeedData } from "@/lib/environment";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
 export default async function StorePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  if (!canShowPublicSeedData) notFound();
   const store = await prisma.store.findFirst({
     where: { OR: [{ slug }, { subdomain: slug }], status: "ACTIVE" },
     include: {
@@ -52,9 +55,13 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
 
       <section className="mt-6">
         <h2 className="mb-3 text-xl font-black text-wisepix-950">Catálogo</h2>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          {store.listings.map((listing) => <ListingCard key={listing.id} listing={listing} />)}
-        </div>
+        {store.listings.length ? (
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            {store.listings.map((listing) => <ListingCard key={listing.id} listing={listing} />)}
+          </div>
+        ) : (
+          <EmptyState icon={Store} title="Lojas parceiras serão exibidas aqui em breve." description="Esta store ainda não possui catálogo público disponível." />
+        )}
       </section>
     </MobileShell>
   );

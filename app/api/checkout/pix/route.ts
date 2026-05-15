@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
   const ownerWalletId = process.env.MIUSE_OWNER_WALLET_ID;
-  if (!ownerWalletId) return NextResponse.json({ error: "MIUSE_OWNER_WALLET_ID não configurado" }, { status: 500 });
+  if (!ownerWalletId) return NextResponse.json({ error: "Checkout indisponível no momento." }, { status: 500 });
 
   const parsed = checkoutSchema.safeParse(await request.json());
   if (!parsed.success) return NextResponse.json({ error: "Dados inválidos" }, { status: 400 });

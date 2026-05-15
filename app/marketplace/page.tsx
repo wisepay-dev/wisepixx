@@ -1,6 +1,8 @@
-import { Search } from "lucide-react";
+import { PackageSearch, Search } from "lucide-react";
+import { EmptyState } from "@/components/empty-state";
 import { MobileShell } from "@/components/mobile-shell";
 import { ListingCard } from "@/components/listing-card";
+import { canShowPublicSeedData } from "@/lib/environment";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -11,19 +13,21 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
   const category = params.category;
   const [categories, listings] = await Promise.all([
     prisma.category.findMany({ where: { active: true }, orderBy: { name: "asc" } }),
-    prisma.listing.findMany({
-      where: {
-        status: "ACTIVE",
-        ...(q ? { OR: [{ title: { contains: q, mode: "insensitive" } }, { description: { contains: q, mode: "insensitive" } }] } : {}),
-        ...(category ? { category: { slug: category } } : {})
-      },
-      include: {
-        category: true,
-        seller: { select: { username: true, name: true, sellerLevel: true, kycStatus: true } },
-        store: { select: { name: true, slug: true, subdomain: true, verified: true } }
-      },
-      orderBy: [{ featured: "desc" }, { createdAt: "desc" }]
-    })
+    canShowPublicSeedData
+      ? prisma.listing.findMany({
+          where: {
+            status: "ACTIVE",
+            ...(q ? { OR: [{ title: { contains: q, mode: "insensitive" } }, { description: { contains: q, mode: "insensitive" } }] } : {}),
+            ...(category ? { category: { slug: category } } : {})
+          },
+          include: {
+            category: true,
+            seller: { select: { username: true, name: true, sellerLevel: true, kycStatus: true } },
+            store: { select: { name: true, slug: true, subdomain: true, verified: true } }
+          },
+          orderBy: [{ featured: "desc" }, { createdAt: "desc" }]
+        })
+      : Promise.resolve([])
   ]);
 
   return (
@@ -45,9 +49,17 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
         </select>
         <button className="h-12 rounded-lg bg-wisepix-600 px-5 font-bold text-white">Filtrar</button>
       </form>
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        {listings.map((listing) => <ListingCard key={listing.id} listing={listing} />)}
-      </div>
+      {listings.length ? (
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          {listings.map((listing) => <ListingCard key={listing.id} listing={listing} />)}
+        </div>
+      ) : (
+        <EmptyState
+          icon={PackageSearch}
+          title="Os primeiros anúncios estarão disponíveis em breve."
+          description="Durante o pré-lançamento, a WisePix não exibe produtos fictícios nem números artificiais."
+        />
+      )}
     </MobileShell>
   );
 }

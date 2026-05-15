@@ -2,12 +2,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MessageCircle, ShieldCheck, ShoppingBag, Star } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
+import { canShowPublicSeedData } from "@/lib/environment";
 import { formatCurrency } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  if (!canShowPublicSeedData) return {};
   const { slug } = await params;
   const listing = await prisma.listing.findUnique({ where: { slug }, select: { title: true, description: true, images: true } });
   if (!listing) return {};
@@ -20,6 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ListingPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  if (!canShowPublicSeedData) notFound();
   const listing = await prisma.listing.findUnique({
     where: { slug },
     include: {
@@ -63,7 +66,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
             <p className="flex items-center gap-2 text-sm font-black text-wisepix-950">
               <ShieldCheck size={18} /> Proteção WisePix
             </p>
-            <p className="mt-2 text-sm leading-6 text-slate-600">O vendedor só recebe após pagamento confirmado e fluxo de entrega registrado.</p>
+            <p className="mt-2 text-sm leading-6 text-slate-600">A WisePix registra pedidos, pagamentos e entregas para trazer mais segurança.</p>
           </div>
           <form action="/api/checkout/pix" method="post" className="mt-5">
             <Link href={`/checkout?listingId=${listing.id}`} className="flex h-12 items-center justify-center gap-2 rounded-lg bg-wisepix-600 font-bold text-white">

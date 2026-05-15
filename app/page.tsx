@@ -1,120 +1,238 @@
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, ShieldCheck, Sparkles, TrendingUp } from "lucide-react";
+import {
+  ArrowRight,
+  BadgeCheck,
+  Bell,
+  Bot,
+  CheckCircle2,
+  CreditCard,
+  MessageCircle,
+  PackageCheck,
+  ShieldCheck,
+  Smartphone,
+  Store,
+  UsersRound
+} from "lucide-react";
+import { EmptyState } from "@/components/empty-state";
 import { MobileShell } from "@/components/mobile-shell";
-import { ListingCard } from "@/components/listing-card";
-import { StatCard } from "@/components/stat-card";
-import { formatCurrency } from "@/lib/format";
-import { prisma } from "@/lib/prisma";
+import { WaitlistForm } from "@/components/waitlist-form";
 
 export const dynamic = "force-dynamic";
 
-export default async function HomePage() {
-  const [listings, posts, stats] = await Promise.all([
-    prisma.listing.findMany({
-      where: { status: "ACTIVE" },
-      include: {
-        category: true,
-        seller: { select: { username: true, name: true, sellerLevel: true, kycStatus: true } },
-        store: { select: { name: true, slug: true, subdomain: true, verified: true } }
-      },
-      orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
-      take: 8
-    }),
-    prisma.feedPost.findMany({
-      include: {
-        author: { select: { username: true, name: true, image: true, sellerLevel: true } },
-        media: true,
-        likes: true
-      },
-      orderBy: { createdAt: "desc" },
-      take: 6
-    }),
-    prisma.$transaction([
-      prisma.listing.count({ where: { status: "ACTIVE" } }),
-      prisma.user.count(),
-      prisma.order.aggregate({ _sum: { amountCents: true }, where: { status: { in: ["PAID", "DELIVERED", "COMPLETED"] } } })
-    ])
-  ]);
+const steps = [
+  "Crie sua conta",
+  "Publique seu produto",
+  "Receba pedidos",
+  "Entregue manualmente ou automaticamente",
+  "Construa reputação"
+];
 
+const sellerBenefits = [
+  "Anúncios para produtos digitais e serviços",
+  "Estoque automático para códigos, links e acessos",
+  "Loja própria futuramente para parceiros",
+  "Notificações para pedidos e mensagens",
+  "Painel simples para acompanhar operação"
+];
+
+const buyerBenefits = [
+  "Checkout simples pensado para Pix",
+  "Acompanhamento do pedido em um só lugar",
+  "Avaliações para ajudar na decisão",
+  "Disputa quando algo precisar de revisão"
+];
+
+export default function HomePage() {
   return (
     <MobileShell>
-      <section className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="rounded-lg bg-premium-black p-5 text-white shadow-soft sm:p-8">
-          <div className="flex flex-wrap gap-2">
-            <span className="rounded-lg bg-white/10 px-3 py-1 text-xs font-bold">Pix-first</span>
-            <span className="rounded-lg bg-white/10 px-3 py-1 text-xs font-bold">Discord-first</span>
-            <span className="rounded-lg bg-white/10 px-3 py-1 text-xs font-bold">Mobile-first</span>
+      <section className="overflow-hidden rounded-lg bg-premium-black text-white shadow-soft">
+        <div className="grid gap-8 p-5 sm:p-8 lg:grid-cols-[1.05fr_0.95fr] lg:p-10">
+          <div className="flex flex-col justify-center">
+            <div className="flex flex-wrap gap-2">
+              <span className="rounded-lg bg-white/10 px-3 py-1 text-xs font-bold text-blue-100">Em breve</span>
+              <span className="rounded-lg bg-white/10 px-3 py-1 text-xs font-bold text-blue-100">Mobile-first</span>
+              <span className="rounded-lg bg-white/10 px-3 py-1 text-xs font-bold text-blue-100">Discord-first</span>
+            </div>
+            <h1 className="mt-7 max-w-3xl text-4xl font-black leading-tight tracking-normal sm:text-6xl">
+              Venda produtos digitais pelo celular, com Pix e reputação.
+            </h1>
+            <p className="mt-5 max-w-2xl text-base font-medium leading-7 text-blue-100 sm:text-lg">
+              A WisePix está sendo construída para quem vende produtos digitais, serviços, automações, bots, design e lojas parceiras com uma experiência simples, social e profissional.
+            </p>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <a href="#lista-de-espera" className="flex h-12 items-center justify-center gap-2 rounded-lg bg-wisepix-500 px-5 font-bold text-white">
+                Entrar na lista de espera <ArrowRight size={19} />
+              </a>
+              <a href="#como-funciona" className="flex h-12 items-center justify-center rounded-lg border border-white/20 px-5 font-bold text-white">
+                Conhecer a WisePix
+              </a>
+            </div>
           </div>
-          <h1 className="mt-7 max-w-2xl text-4xl font-black leading-tight tracking-normal sm:text-6xl">
-            WisePix
-          </h1>
-          <p className="mt-4 max-w-xl text-base font-medium leading-7 text-blue-100 sm:text-lg">
-            Venda produtos digitais, serviços, automações, bots, licenças, streamings autorizados e gift cards com checkout Pix, proteção e social commerce.
-          </p>
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-            <Link href="/vender" className="flex h-12 items-center justify-center gap-2 rounded-lg bg-wisepix-500 px-5 font-bold text-white">
-              Começar a vender <ArrowRight size={19} />
-            </Link>
-            <Link href="/marketplace" className="flex h-12 items-center justify-center rounded-lg border border-white/20 px-5 font-bold text-white">
-              Ver marketplace
-            </Link>
-          </div>
-        </div>
 
-        <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
-          <StatCard label="Anúncios ativos" value={String(stats[0])} detail="Produtos digitais prontos para comprar" />
-          <StatCard label="Comunidade" value={String(stats[1])} detail="Vendedores, parceiros e compradores" />
-          <StatCard label="GMV confirmado" value={formatCurrency(stats[2]._sum.amountCents ?? 0)} detail="Pedidos pagos e concluídos" />
+          <div className="rounded-lg border border-white/10 bg-white/[0.04] p-4">
+            <div className="rounded-lg bg-white p-4 text-premium-black">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-black uppercase text-wisepix-700">Pré-lançamento</p>
+                  <h2 className="mt-1 text-2xl font-black text-wisepix-950">WisePix app</h2>
+                </div>
+                <Smartphone className="text-wisepix-600" size={28} />
+              </div>
+              <div className="mt-5 space-y-3">
+                {["Marketplace digital", "Checkout Pix", "Pedidos e entregas", "Reputação pública"].map((item) => (
+                  <div key={item} className="flex items-center gap-3 rounded-lg bg-wisepix-50 p-3">
+                    <CheckCircle2 size={18} className="text-wisepix-700" />
+                    <span className="text-sm font-bold text-wisepix-950">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section className="mt-8">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-xl font-black text-wisepix-950">Marketplace</h2>
-          <Link href="/marketplace" className="text-sm font-bold text-wisepix-700">Ver tudo</Link>
+      <section id="como-funciona" className="mt-10">
+        <div className="mb-4">
+          <p className="text-sm font-black uppercase text-wisepix-700">Como funciona</p>
+          <h2 className="mt-2 text-3xl font-black text-wisepix-950">Da vitrine ao pedido, sem complicar.</h2>
         </div>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          {listings.map((listing) => (
-            <ListingCard key={listing.id} listing={listing} />
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          {steps.map((step, index) => (
+            <div key={step} className="rounded-lg border border-blue-100 bg-white p-4 shadow-sm">
+              <span className="grid h-9 w-9 place-items-center rounded-lg bg-wisepix-600 text-sm font-black text-white">{index + 1}</span>
+              <p className="mt-4 text-sm font-black text-wisepix-950">{step}</p>
+            </div>
           ))}
         </div>
       </section>
 
-      <section className="mt-8 grid gap-4 lg:grid-cols-[0.72fr_0.28fr]">
-        <div>
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-xl font-black text-wisepix-950">Feed social</h2>
-            <Sparkles size={20} className="text-wisepix-600" />
-          </div>
-          <div className="space-y-3">
-            {posts.map((post) => (
-              <article key={post.id} className="rounded-lg border border-blue-100 bg-white p-4 shadow-sm">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="font-black text-wisepix-950">@{post.author.username ?? "user"}</p>
-                    <p className="text-xs font-bold text-slate-500">{post.author.sellerLevel}</p>
-                  </div>
-                  {post.automatic ? <BadgeCheck size={18} className="text-wisepix-600" /> : null}
-                </div>
-                <p className="mt-3 text-sm leading-6 text-slate-700">{post.text}</p>
-                <p className="mt-3 text-xs font-bold text-slate-500">{post.likes.length} curtidas</p>
-              </article>
+      <section className="mt-10 grid gap-4 lg:grid-cols-2">
+        <div className="rounded-lg border border-blue-100 bg-white p-5 shadow-sm">
+          <h2 className="flex items-center gap-2 text-2xl font-black text-wisepix-950">
+            <PackageCheck size={23} className="text-wisepix-600" /> Para vendedores
+          </h2>
+          <div className="mt-5 grid gap-3">
+            {sellerBenefits.map((item) => (
+              <p key={item} className="flex items-start gap-3 text-sm font-semibold leading-6 text-slate-700">
+                <BadgeCheck size={18} className="mt-0.5 shrink-0 text-wisepix-600" /> {item}
+              </p>
             ))}
           </div>
         </div>
 
-        <aside className="rounded-lg border border-blue-100 bg-white p-4 shadow-sm">
-          <h3 className="flex items-center gap-2 text-base font-black text-wisepix-950">
-            <ShieldCheck size={18} /> Proteção WisePix
-          </h3>
-          <p className="mt-3 text-sm leading-6 text-slate-600">
-            Pagamento Pix confirmado por webhook, entrega manual com confirmação do comprador e estoque automático com reveal registrado por IP e horário.
-          </p>
-          <div className="mt-4 flex items-center gap-2 rounded-lg bg-wisepix-50 p-3 text-sm font-bold text-wisepix-900">
-            <TrendingUp size={18} /> Taxas por nível configuráveis pelo OWNER.
+        <div className="rounded-lg border border-blue-100 bg-white p-5 shadow-sm">
+          <h2 className="flex items-center gap-2 text-2xl font-black text-wisepix-950">
+            <CreditCard size={23} className="text-wisepix-600" /> Para compradores
+          </h2>
+          <div className="mt-5 grid gap-3">
+            {buyerBenefits.map((item) => (
+              <p key={item} className="flex items-start gap-3 text-sm font-semibold leading-6 text-slate-700">
+                <BadgeCheck size={18} className="mt-0.5 shrink-0 text-wisepix-600" /> {item}
+              </p>
+            ))}
           </div>
-        </aside>
+        </div>
       </section>
+
+      <section className="mt-10 grid gap-4 lg:grid-cols-[0.58fr_0.42fr]">
+        <div className="rounded-lg border border-blue-100 bg-white p-5 shadow-sm">
+          <h2 className="flex items-center gap-2 text-2xl font-black text-wisepix-950">
+            <ShieldCheck size={23} className="text-wisepix-600" /> Proteção WisePix
+          </h2>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            {[
+              "A WisePix registra pedidos, pagamentos e entregas para trazer mais segurança.",
+              "Compradores podem acompanhar o pedido e abrir disputa se necessário.",
+              "Vendedores contam com entrega automática, histórico e reputação.",
+              "Pagamentos e saques serão processados por parceiros de pagamento integrados."
+            ].map((item) => (
+              <p key={item} className="rounded-lg bg-wisepix-50 p-3 text-sm font-semibold leading-6 text-wisepix-950">{item}</p>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-lg border border-blue-100 bg-white p-5 shadow-sm">
+          <h2 className="flex items-center gap-2 text-2xl font-black text-wisepix-950">
+            <Store size={23} className="text-wisepix-600" /> Stores
+          </h2>
+          <p className="mt-4 text-sm leading-6 text-slate-600">
+            Lojas parceiras poderão ter subdomínio, landing própria, catálogo, temas e presença conectada à comunidade.
+          </p>
+          <div className="mt-5">
+            <EmptyState icon={Store} title="Lojas parceiras em breve" description="As primeiras lojas parceiras serão exibidas aqui quando a WisePix abrir o acesso público." />
+          </div>
+        </div>
+      </section>
+
+      <section className="mt-10 grid gap-4 lg:grid-cols-3">
+        <div className="rounded-lg border border-blue-100 bg-white p-5 shadow-sm lg:col-span-2">
+          <h2 className="flex items-center gap-2 text-2xl font-black text-wisepix-950">
+            <Bot size={23} className="text-wisepix-600" /> Discord-first
+          </h2>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+            {[
+              { label: "Notificações", icon: Bell },
+              { label: "Cargos e reputação", icon: BadgeCheck },
+              { label: "Comunidade", icon: UsersRound },
+              { label: "Bot WisePix", icon: Bot }
+            ].map(({ label, icon: TypedIcon }) => {
+              return (
+                <div key={label} className="flex items-center gap-3 rounded-lg bg-slate-50 p-3">
+                  <TypedIcon size={18} className="text-wisepix-700" />
+                  <span className="text-sm font-black text-wisepix-950">{label}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        <EmptyState icon={MessageCircle} title="A comunidade WisePix ainda está começando" description="Sem relatos artificiais, rankings falsos ou números inflados. A comunidade será exibida quando existir atividade real." />
+      </section>
+
+      <section className="mt-10 grid gap-4 lg:grid-cols-[0.45fr_0.55fr]">
+        <div>
+          <p className="text-sm font-black uppercase text-wisepix-700">Marketplace</p>
+          <h2 className="mt-2 text-3xl font-black text-wisepix-950">Os primeiros anúncios estarão disponíveis em breve.</h2>
+          <p className="mt-3 text-sm leading-6 text-slate-600">
+            O catálogo público será aberto com vendedores e produtos revisados. Até lá, a WisePix permanece em preparação.
+          </p>
+          <Link href="/marketplace" className="mt-5 inline-flex h-11 items-center justify-center rounded-lg border border-blue-100 px-4 text-sm font-bold text-wisepix-800">
+            Ver estado do marketplace
+          </Link>
+        </div>
+        <EmptyState icon={PackageCheck} title="Catálogo em preparação" description="Nenhum anúncio será exibido como se fosse real durante o pré-lançamento." />
+      </section>
+
+      <section id="lista-de-espera" className="mt-10 grid gap-5 rounded-lg bg-wisepix-950 p-5 text-white shadow-soft sm:p-8 lg:grid-cols-[0.42fr_0.58fr]">
+        <div>
+          <p className="text-sm font-black uppercase text-blue-200">Lista de espera</p>
+          <h2 className="mt-2 text-3xl font-black">Entre antes da abertura pública.</h2>
+          <p className="mt-3 text-sm leading-6 text-blue-100">
+            Quer vender, comprar ou abrir uma store parceira? Deixe seus dados e conte como pretende usar a WisePix.
+          </p>
+          <div className="mt-5 flex flex-col gap-3 sm:flex-row lg:flex-col">
+            <Link href="/login" className="flex h-11 items-center justify-center rounded-lg bg-white px-4 text-sm font-black text-wisepix-950">
+              Login / cadastro
+            </Link>
+            <a href="https://discord.gg/configure" className="flex h-11 items-center justify-center rounded-lg border border-white/20 px-4 text-sm font-black text-white">
+              Entrar no Discord
+            </a>
+          </div>
+        </div>
+        <WaitlistForm />
+      </section>
+
+      <footer className="mt-10 border-t border-blue-100 py-6">
+        <div className="flex flex-col gap-4 text-sm font-semibold text-slate-600 sm:flex-row sm:items-center sm:justify-between">
+          <p>WisePix — plataforma digital em pré-lançamento.</p>
+          <div className="flex flex-wrap gap-4">
+            <Link href="/termos">Termos</Link>
+            <Link href="/privacidade">Privacidade</Link>
+            <Link href="/produtos-proibidos">Produtos proibidos</Link>
+            <a href="mailto:contato@wisepix.online">Contato</a>
+            <a href="https://discord.gg/configure">Discord</a>
+          </div>
+        </div>
+      </footer>
     </MobileShell>
   );
 }

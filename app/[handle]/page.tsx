@@ -1,7 +1,9 @@
 import { notFound, redirect } from "next/navigation";
-import { BadgeCheck } from "lucide-react";
+import { BadgeCheck, MessageCircle, PackageSearch } from "lucide-react";
+import { EmptyState } from "@/components/empty-state";
 import { MobileShell } from "@/components/mobile-shell";
 import { ListingCard } from "@/components/listing-card";
+import { canShowPublicSeedData } from "@/lib/environment";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -9,10 +11,12 @@ export const dynamic = "force-dynamic";
 export default async function HandlePage({ params }: { params: Promise<{ handle: string }> }) {
   const { handle } = await params;
   if (!handle.startsWith("@")) {
+    if (!canShowPublicSeedData) notFound();
     const store = await prisma.store.findUnique({ where: { slug: handle }, select: { slug: true } });
     if (store) redirect(`/loja/${store.slug}`);
     notFound();
   }
+  if (!canShowPublicSeedData) notFound();
 
   const username = decodeURIComponent(handle.slice(1));
   const user = await prisma.user.findUnique({
@@ -69,20 +73,28 @@ export default async function HandlePage({ params }: { params: Promise<{ handle:
 
       <section className="mt-6">
         <h2 className="mb-3 text-xl font-black text-wisepix-950">Produtos</h2>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          {user.listings.map((listing) => <ListingCard key={listing.id} listing={listing} />)}
-        </div>
+        {user.listings.length ? (
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            {user.listings.map((listing) => <ListingCard key={listing.id} listing={listing} />)}
+          </div>
+        ) : (
+          <EmptyState icon={PackageSearch} title="Produtos em breve" description="Este perfil ainda não possui produtos públicos." />
+        )}
       </section>
 
       <section className="mt-6">
         <h2 className="mb-3 text-xl font-black text-wisepix-950">Feed</h2>
-        <div className="space-y-3">
-          {user.feedPosts.map((post) => (
-            <article key={post.id} className="rounded-lg border border-blue-100 bg-white p-4 shadow-sm">
-              <p className="text-sm leading-6 text-slate-700">{post.text}</p>
-            </article>
-          ))}
-        </div>
+        {user.feedPosts.length ? (
+          <div className="space-y-3">
+            {user.feedPosts.map((post) => (
+              <article key={post.id} className="rounded-lg border border-blue-100 bg-white p-4 shadow-sm">
+                <p className="text-sm leading-6 text-slate-700">{post.text}</p>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <EmptyState icon={MessageCircle} title="A comunidade WisePix ainda está começando." description="O feed público será liberado quando houver atividade real." />
+        )}
       </section>
     </MobileShell>
   );
