@@ -1,15 +1,12 @@
-import { redirect } from "next/navigation";
 import { MobileShell } from "@/components/mobile-shell";
 import { StatCard } from "@/components/stat-card";
-import { auth } from "@/lib/auth";
-import { canAccessAdmin } from "@/lib/permissions";
+import { requireAdmin } from "@/lib/guards";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
-  const session = await auth();
-  if (!canAccessAdmin(session?.user?.roles)) redirect("/");
+  await requireAdmin("/admin");
 
   const [users, kyc, listings, disputes, withdrawals, tickets] = await Promise.all([
     prisma.user.count(),

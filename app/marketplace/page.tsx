@@ -13,21 +13,20 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
   const category = params.category;
   const [categories, listings] = await Promise.all([
     prisma.category.findMany({ where: { active: true }, orderBy: { name: "asc" } }),
-    canShowPublicSeedData
-      ? prisma.listing.findMany({
-          where: {
-            status: "ACTIVE",
-            ...(q ? { OR: [{ title: { contains: q, mode: "insensitive" } }, { description: { contains: q, mode: "insensitive" } }] } : {}),
-            ...(category ? { category: { slug: category } } : {})
-          },
-          include: {
-            category: true,
-            seller: { select: { username: true, name: true, sellerLevel: true, kycStatus: true } },
-            store: { select: { name: true, slug: true, subdomain: true, verified: true } }
-          },
-          orderBy: [{ featured: "desc" }, { createdAt: "desc" }]
-        })
-      : Promise.resolve([])
+    prisma.listing.findMany({
+      where: {
+        status: "ACTIVE",
+        ...(!canShowPublicSeedData ? { seller: { email: { not: { endsWith: "@wisepix.dev" } } } } : {}),
+        ...(q ? { OR: [{ title: { contains: q, mode: "insensitive" } }, { description: { contains: q, mode: "insensitive" } }] } : {}),
+        ...(category ? { category: { slug: category } } : {})
+      },
+      include: {
+        category: true,
+        seller: { select: { username: true, name: true, sellerLevel: true, kycStatus: true } },
+        store: { select: { name: true, slug: true, subdomain: true, verified: true } }
+      },
+      orderBy: [{ featured: "desc" }, { createdAt: "desc" }]
+    })
   ]);
 
   return (
@@ -56,8 +55,8 @@ export default async function MarketplacePage({ searchParams }: { searchParams: 
       ) : (
         <EmptyState
           icon={PackageSearch}
-          title="Os primeiros anúncios estarão disponíveis em breve."
-          description="Durante o pré-lançamento, a WisePix não exibe produtos fictícios nem números artificiais."
+          title="Nenhum anúncio publicado ainda."
+          description="Os primeiros vendedores começarão a aparecer aqui em breve."
         />
       )}
     </MobileShell>

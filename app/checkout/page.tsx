@@ -1,15 +1,14 @@
 import { redirect } from "next/navigation";
 import { CheckoutButton } from "@/components/checkout-button";
 import { MobileShell } from "@/components/mobile-shell";
-import { auth } from "@/lib/auth";
 import { formatCurrency } from "@/lib/format";
+import { requireUser } from "@/lib/guards";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
 export default async function CheckoutPage({ searchParams }: { searchParams: Promise<{ listingId?: string }> }) {
-  const session = await auth();
-  if (!session?.user?.id) redirect("/login");
+  await requireUser("/checkout");
   const params = await searchParams;
   if (!params.listingId) redirect("/marketplace");
 

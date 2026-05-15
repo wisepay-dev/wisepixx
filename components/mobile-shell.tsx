@@ -1,17 +1,19 @@
 import Link from "next/link";
-import { Bell, Home, PlusCircle, Search, ShieldCheck, Store, UserRound } from "lucide-react";
+import { Bell, Home, LayoutDashboard, PlusCircle, Search, ShieldCheck, UserRound } from "lucide-react";
 import { auth } from "@/lib/auth";
+import { LogoutButton } from "@/components/logout-button";
 
 const navItems = [
   { href: "/", label: "Início", icon: Home },
-  { href: "/marketplace", label: "Buscar", icon: Search },
-  { href: "/vender", label: "Vender", icon: PlusCircle },
-  { href: "/dashboard/vendedor", label: "Saldo", icon: Store },
+  { href: "/explorar", label: "Explorar", icon: Search },
+  { href: "/dashboard/vendedor/anuncios/novo", label: "Vender", icon: PlusCircle },
+  { href: "/dashboard", label: "Painel", icon: LayoutDashboard },
   { href: "/perfil", label: "Perfil", icon: UserRound }
 ];
 
 export async function MobileShell({ children }: { children: React.ReactNode }) {
   const session = await auth();
+  const profileHref = session?.user?.username ? `/perfil/${session.user.username}` : "/onboarding";
 
   return (
     <div className="min-h-screen bg-[#f8fbff] text-premium-black">
@@ -22,6 +24,9 @@ export async function MobileShell({ children }: { children: React.ReactNode }) {
             <span className="text-lg font-black tracking-normal text-wisepix-950">WisePix</span>
           </Link>
           <div className="flex items-center gap-2">
+            <Link href="/explorar" className="hidden rounded-lg border border-blue-100 px-3 py-2 text-sm font-semibold text-wisepix-800 sm:inline-flex">
+              Explorar
+            </Link>
             {session?.user?.roles?.includes("OWNER") ? (
               <Link href="/owner" className="hidden rounded-lg border border-blue-100 px-3 py-2 text-sm font-semibold text-wisepix-800 sm:inline-flex">
                 Owner
@@ -36,13 +41,27 @@ export async function MobileShell({ children }: { children: React.ReactNode }) {
               <Bell size={18} />
             </button>
             {session?.user ? (
-              <Link href="/perfil" className="grid h-10 w-10 place-items-center rounded-lg bg-premium-black text-sm font-bold text-white">
-                {session.user.name?.[0]?.toUpperCase() ?? "U"}
-              </Link>
+              <>
+                <Link href={profileHref} className="hidden rounded-lg border border-blue-100 px-3 py-2 text-sm font-semibold text-wisepix-800 sm:inline-flex">
+                  Meu perfil
+                </Link>
+                <Link href="/dashboard" className="hidden rounded-lg border border-blue-100 px-3 py-2 text-sm font-semibold text-wisepix-800 sm:inline-flex">
+                  Dashboard
+                </Link>
+                <LogoutButton />
+                <Link href={profileHref} className="grid h-10 w-10 place-items-center rounded-lg bg-premium-black text-sm font-bold text-white" title={session.user.name ?? "Meu perfil"}>
+                  {session.user.name?.[0]?.toUpperCase() ?? session.user.username?.[0]?.toUpperCase() ?? "U"}
+                </Link>
+              </>
             ) : (
-              <Link href="/login" className="rounded-lg bg-wisepix-600 px-4 py-2 text-sm font-bold text-white">
-                Entrar
-              </Link>
+              <>
+                <Link href="/login" className="rounded-lg border border-blue-100 px-4 py-2 text-sm font-bold text-wisepix-800">
+                  Entrar
+                </Link>
+                <Link href="/register" className="rounded-lg bg-wisepix-600 px-4 py-2 text-sm font-bold text-white">
+                  Criar conta
+                </Link>
+              </>
             )}
           </div>
         </div>

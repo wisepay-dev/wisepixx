@@ -9,8 +9,6 @@ import { listingSchema } from "@/lib/validation";
 
 
 export async function GET(request: NextRequest) {
-  if (!canShowPublicSeedData) return NextResponse.json({ listings: [] });
-
   const { searchParams } = request.nextUrl;
   const q = searchParams.get("q")?.trim();
   const category = searchParams.get("category");
@@ -20,6 +18,7 @@ export async function GET(request: NextRequest) {
   const listings = await prisma.listing.findMany({
     where: {
       status: ListingStatus.ACTIVE,
+      ...(!canShowPublicSeedData ? { seller: { email: { not: { endsWith: "@wisepix.dev" } } } } : {}),
       ...(q
         ? {
             OR: [

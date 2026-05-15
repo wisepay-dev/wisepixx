@@ -6,6 +6,16 @@ import { PlusCircle } from "lucide-react";
 
 type Category = { id: string; name: string };
 
+async function safeJson(response: Response) {
+  const text = await response.text();
+  if (!text) return null;
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+}
+
 export function ListingForm({ categories }: { categories: Category[] }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
@@ -30,9 +40,13 @@ export function ListingForm({ categories }: { categories: Category[] }) {
       })
     });
 
-    const body = await response.json();
+    const body = await safeJson(response);
     if (!response.ok) {
-      setError(body.error ?? "Não foi possível criar o anúncio.");
+      setError(body?.error ?? "Não foi possível criar o anúncio.");
+      return;
+    }
+    if (!body?.listing?.slug) {
+      setError("Anúncio criado, mas não foi possível abrir a página automaticamente.");
       return;
     }
     router.push(`/anuncio/${body.listing.slug}`);

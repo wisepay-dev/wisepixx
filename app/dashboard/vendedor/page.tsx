@@ -1,18 +1,16 @@
-import { redirect } from "next/navigation";
 import { Package, Wallet } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
 import { StatCard } from "@/components/stat-card";
-import { auth } from "@/lib/auth";
 import { formatCurrency, formatPercent } from "@/lib/format";
 import { getSellerFees } from "@/lib/fees";
+import { requireUser } from "@/lib/guards";
 import { getMiuseBalance, type MiuseBalanceView } from "@/lib/miuse";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
 export default async function SellerDashboardPage() {
-  const session = await auth();
-  if (!session?.user?.id) redirect("/login");
+  const session = await requireUser("/dashboard/vendedor");
 
   const [wallet, listings, orders, reviews, fees] = await Promise.all([
     prisma.sellerWallet.upsert({

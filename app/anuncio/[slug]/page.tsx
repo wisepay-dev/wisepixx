@@ -2,16 +2,16 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MessageCircle, ShieldCheck, ShoppingBag, Star } from "lucide-react";
 import { MobileShell } from "@/components/mobile-shell";
-import { canShowPublicSeedData } from "@/lib/environment";
+import { canShowPublicSeedData, isSeedEmail } from "@/lib/environment";
 import { formatCurrency } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  if (!canShowPublicSeedData) return {};
   const { slug } = await params;
-  const listing = await prisma.listing.findUnique({ where: { slug }, select: { title: true, description: true, images: true } });
+  const listing = await prisma.listing.findUnique({ where: { slug }, select: { title: true, description: true, images: true, seller: { select: { email: true } } } });
+  if (listing && !canShowPublicSeedData && isSeedEmail(listing.seller.email)) return {};
   if (!listing) return {};
   return {
     title: listing.title,
@@ -22,7 +22,6 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ListingPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  if (!canShowPublicSeedData) notFound();
   const listing = await prisma.listing.findUnique({
     where: { slug },
     include: {
@@ -33,6 +32,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
     }
   });
   if (!listing) notFound();
+  if (!canShowPublicSeedData && isSeedEmail(listing.seller.email)) notFound();
 
   return (
     <MobileShell>
@@ -78,7 +78,7 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
           </button>
           <div className="mt-5 border-t border-blue-100 pt-4">
             <p className="text-sm font-bold text-slate-500">Vendedor</p>
-            <Link href={`/@${listing.seller.username ?? listing.seller.id}`} className="mt-2 block text-lg font-black text-wisepix-950">
+            <Link href={listing.seller.username ? `/perfil/${listing.seller.username}` : "/explorar"} className="mt-2 block text-lg font-black text-wisepix-950">
               @{listing.seller.username ?? "seller"}
             </Link>
             <p className="text-sm font-semibold text-slate-500">{listing.seller.sellerLevel}</p>

@@ -2,6 +2,16 @@
 
 import { useState } from "react";
 
+async function safeJson(response: Response) {
+  const text = await response.text();
+  if (!text) return null;
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+}
+
 export function CheckoutButton({ listingId }: { listingId: string }) {
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -14,10 +24,10 @@ export function CheckoutButton({ listingId }: { listingId: string }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ listingId })
     });
-    const body = await response.json();
+    const body = await safeJson(response);
     setLoading(false);
     if (!response.ok) {
-      setMessage(body.error ?? "Falha ao gerar Pix.");
+      setMessage(body?.error ?? "Falha ao gerar Pix.");
       return;
     }
     setMessage("Pedido criado. Aguardando confirmação do parceiro de pagamento.");

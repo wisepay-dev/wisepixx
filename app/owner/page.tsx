@@ -1,17 +1,14 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { MobileShell } from "@/components/mobile-shell";
 import { StatCard } from "@/components/stat-card";
-import { auth } from "@/lib/auth";
 import { formatCurrency } from "@/lib/format";
-import { canAccessOwner } from "@/lib/permissions";
+import { requireOwner } from "@/lib/guards";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
 export default async function OwnerPage() {
-  const session = await auth();
-  if (!canAccessOwner(session?.user?.roles)) redirect("/");
+  await requireOwner("/owner");
 
   const [orders, users, sellers, stores, visits, pageviews, disputes, withdrawals] = await Promise.all([
     prisma.order.aggregate({ _sum: { amountCents: true, saleFeeCents: true }, where: { status: { in: ["PAID", "DELIVERED", "COMPLETED"] } } }),

@@ -1,14 +1,11 @@
-import { redirect } from "next/navigation";
 import { MobileShell } from "@/components/mobile-shell";
-import { auth } from "@/lib/auth";
-import { canAccessOwner } from "@/lib/permissions";
+import { requireOwner } from "@/lib/guards";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
 export default async function OwnerStoresPage() {
-  const session = await auth();
-  if (!canAccessOwner(session?.user?.roles)) redirect("/");
+  await requireOwner("/owner/stores");
   const [stores, users, themes] = await Promise.all([
     prisma.store.findMany({ include: { owner: { select: { username: true, name: true } }, theme: true }, orderBy: { createdAt: "desc" } }),
     prisma.user.findMany({ select: { id: true, username: true, name: true, email: true }, orderBy: { createdAt: "desc" }, take: 100 }),

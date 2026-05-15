@@ -25,6 +25,7 @@ async function makeUniqueUsername(seed: string | null | undefined) {
 export const authConfig = {
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
+  trustHost: true,
   pages: {
     signIn: "/login"
   },

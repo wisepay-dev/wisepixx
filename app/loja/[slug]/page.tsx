@@ -3,20 +3,23 @@ import { ExternalLink, Store } from "lucide-react";
 import { EmptyState } from "@/components/empty-state";
 import { MobileShell } from "@/components/mobile-shell";
 import { ListingCard } from "@/components/listing-card";
-import { canShowPublicSeedData } from "@/lib/environment";
+import { canShowPublicSeedData, isSeedEmail } from "@/lib/environment";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
 export default async function StorePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  if (!canShowPublicSeedData) notFound();
   const store = await prisma.store.findFirst({
     where: { OR: [{ slug }, { subdomain: slug }], status: "ACTIVE" },
     include: {
+      owner: { select: { email: true } },
       theme: true,
       listings: {
-        where: { status: "ACTIVE" },
+        where: {
+          status: "ACTIVE",
+          ...(!canShowPublicSeedData ? { seller: { email: { not: { endsWith: "@wisepix.dev" } } } } : {})
+        },
         include: {
           category: true,
           seller: { select: { username: true, name: true, sellerLevel: true, kycStatus: true } },
@@ -28,6 +31,7 @@ export default async function StorePage({ params }: { params: Promise<{ slug: st
     }
   });
   if (!store) notFound();
+  if (!canShowPublicSeedData && isSeedEmail(store.owner.email)) notFound();
 
   return (
     <MobileShell>
