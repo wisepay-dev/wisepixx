@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MessageCircle, ShieldCheck, ShoppingBag, Star } from "lucide-react";
+import { EmptyState } from "@/components/empty-state";
 import { MobileShell } from "@/components/mobile-shell";
+import { Badge, ButtonLink, Section } from "@/components/ui/primitives";
 import { canShowPublicSeedData, isSeedEmail } from "@/lib/environment";
 import { formatCurrency } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -54,13 +56,13 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
           </div>
         </section>
 
-        <aside className="rounded-lg border border-blue-100 bg-white p-4 shadow-sm">
+        <aside className="rounded-lg border border-blue-100 bg-white p-4 shadow-lift">
           <p className="text-xs font-black uppercase text-wisepix-700">{listing.category.name}</p>
           <h1 className="mt-2 text-3xl font-black leading-tight text-wisepix-950">{listing.title}</h1>
           <p className="mt-3 text-3xl font-black text-wisepix-700">{formatCurrency(listing.priceCents)}</p>
           <div className="mt-3 flex flex-wrap gap-2 text-xs font-bold">
-            <span className="rounded-lg bg-wisepix-50 px-3 py-1 text-wisepix-800">{listing.deliveryType === "AUTOMATIC" ? "Entrega automática" : "Entrega manual / X1"}</span>
-            <span className="rounded-lg bg-slate-100 px-3 py-1 text-slate-700">{listing.negotiable ? "Negociável" : "Preço fixo"}</span>
+            <Badge tone={listing.deliveryType === "AUTOMATIC" ? "green" : "blue"}>{listing.deliveryType === "AUTOMATIC" ? "Entrega automática" : "Entrega manual / X1"}</Badge>
+            <Badge tone="slate">{listing.negotiable ? "Negociável" : "Preço fixo"}</Badge>
           </div>
           <div className="mt-5 rounded-lg bg-wisepix-50 p-3">
             <p className="flex items-center gap-2 text-sm font-black text-wisepix-950">
@@ -68,14 +70,14 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
             </p>
             <p className="mt-2 text-sm leading-6 text-slate-600">A WisePix registra pedidos, pagamentos e entregas para trazer mais segurança.</p>
           </div>
-          <form action="/api/checkout/pix" method="post" className="mt-5">
-            <Link href={`/checkout?listingId=${listing.id}`} className="flex h-12 items-center justify-center gap-2 rounded-lg bg-wisepix-600 font-bold text-white">
-              <ShoppingBag size={20} /> Comprar com Pix
-            </Link>
-          </form>
-          <button className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-lg border border-blue-100 font-bold text-wisepix-900">
-            <MessageCircle size={20} /> Negociar no chat
-          </button>
+          <ButtonLink href={`/checkout?listingId=${listing.id}`} className="mt-5 h-12 w-full">
+            <ShoppingBag size={20} /> Comprar com Pix
+          </ButtonLink>
+          {listing.negotiable ? (
+            <ButtonLink href="/dashboard/mensagens" variant="secondary" className="mt-3 h-12 w-full">
+              <MessageCircle size={20} /> Conversar sobre o anúncio
+            </ButtonLink>
+          ) : null}
           <div className="mt-5 border-t border-blue-100 pt-4">
             <p className="text-sm font-bold text-slate-500">Vendedor</p>
             <Link href={listing.seller.username ? `/perfil/${listing.seller.username}` : "/explorar"} className="mt-2 block text-lg font-black text-wisepix-950">
@@ -91,24 +93,28 @@ export default async function ListingPage({ params }: { params: Promise<{ slug: 
         </aside>
       </div>
 
-      <section className="mt-6 rounded-lg border border-blue-100 bg-white p-4 shadow-sm">
+      <Section className="mt-6">
         <h2 className="text-xl font-black text-wisepix-950">Descrição</h2>
         <p className="mt-3 whitespace-pre-line text-sm leading-7 text-slate-700">{listing.description}</p>
-      </section>
+      </Section>
 
       <section className="mt-6">
         <h2 className="mb-3 text-xl font-black text-wisepix-950">Avaliações</h2>
-        <div className="space-y-3">
-          {listing.reviews.map((review) => (
-            <article key={review.id} className="rounded-lg border border-blue-100 bg-white p-4 shadow-sm">
-              <p className="flex items-center gap-1 font-black text-wisepix-950">
-                <Star size={16} className="fill-wisepix-500 text-wisepix-500" /> {review.rating}/5
-              </p>
-              <p className="mt-2 text-sm text-slate-700">{review.comment}</p>
-              <p className="mt-2 text-xs font-bold text-slate-500">@{review.author.username ?? "comprador"}</p>
-            </article>
-          ))}
-        </div>
+        {listing.reviews.length ? (
+          <div className="space-y-3">
+            {listing.reviews.map((review) => (
+              <article key={review.id} className="rounded-lg border border-blue-100 bg-white p-4 shadow-sm">
+                <p className="flex items-center gap-1 font-black text-wisepix-950">
+                  <Star size={16} className="fill-wisepix-500 text-wisepix-500" /> {review.rating}/5
+                </p>
+                <p className="mt-2 text-sm text-slate-700">{review.comment}</p>
+                <p className="mt-2 text-xs font-bold text-slate-500">@{review.author.username ?? "comprador"}</p>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <EmptyState icon={Star} title="Este anúncio ainda não tem avaliações." description="As primeiras avaliações aparecerão após pedidos concluídos." />
+        )}
       </section>
     </MobileShell>
   );

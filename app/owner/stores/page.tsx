@@ -1,4 +1,5 @@
 import { MobileShell } from "@/components/mobile-shell";
+import { ButtonLink, PageHeader, Section } from "@/components/ui/primitives";
 import { requireOwner } from "@/lib/guards";
 import { prisma } from "@/lib/prisma";
 
@@ -14,9 +15,8 @@ export default async function OwnerStoresPage() {
 
   return (
     <MobileShell>
-      <h1 className="text-3xl font-black text-wisepix-950">Stores parceiras</h1>
-      <form action="/api/owner/stores" method="post" className="mt-5 grid gap-3 rounded-lg border border-blue-100 bg-white p-4 shadow-sm">
-        <p className="text-sm font-semibold text-slate-600">Criação via API OWNER. Para produção, conectar este formulário a uma action que envie JSON e trate erros em tela.</p>
+      <PageHeader eyebrow="Owner" title="Stores parceiras" description="Crie e acompanhe lojas parceiras com responsável, subdomínio e tema." action={<ButtonLink href="/owner" variant="secondary">Voltar ao owner</ButtonLink>} />
+      <form action="/api/owner/stores" method="post" className="grid gap-3 rounded-lg border border-blue-100 bg-white p-4 shadow-sm">
         <div className="grid gap-3 sm:grid-cols-2">
           <select name="ownerId" className="h-12 rounded-lg border-blue-100">
             {users.map((user) => <option key={user.id} value={user.id}>{user.username ?? user.email ?? user.name}</option>)}
@@ -35,7 +35,9 @@ export default async function OwnerStoresPage() {
         </div>
         <button className="h-12 rounded-lg bg-wisepix-600 font-bold text-white">Criar Store</button>
       </form>
-      <div className="mt-5 grid gap-3">
+      <Section className="mt-5">
+        <h2 className="text-xl font-black text-wisepix-950">Lojas criadas</h2>
+      <div className="mt-4 grid gap-3">
         {stores.map((store) => (
           <article key={store.id} className="rounded-lg border border-blue-100 bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between gap-3">
@@ -49,6 +51,7 @@ export default async function OwnerStoresPage() {
           </article>
         ))}
       </div>
+      </Section>
     </MobileShell>
   );
 }

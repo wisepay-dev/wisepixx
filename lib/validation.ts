@@ -14,7 +14,9 @@ export const listingSchema = z.object({
   priceCents: z.number().int().min(100),
   negotiable: z.boolean().default(false),
   deliveryType: z.enum(["MANUAL", "AUTOMATIC"]),
-  images: z.array(z.string().url()).max(8).default([])
+  images: z.array(z.string().url()).max(8).default([]),
+  secretType: z.string().min(2).max(40).optional(),
+  stockSecrets: z.array(z.string().min(1).max(4000)).max(200).default([])
 });
 
 export const storeSchema = z.object({

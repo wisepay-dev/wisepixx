@@ -30,7 +30,8 @@ const config: Config = {
         }
       },
       boxShadow: {
-        soft: "0 18px 70px rgba(8, 29, 57, 0.12)"
+        soft: "0 18px 70px rgba(8, 29, 57, 0.12)",
+        lift: "0 14px 40px rgba(8, 29, 57, 0.10)"
       }
     }
   },

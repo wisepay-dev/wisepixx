@@ -18,7 +18,9 @@ html {
 
 body {
   min-height: 100vh;
-  background: var(--background);
+  background:
+    radial-gradient(circle at top left, rgba(22, 135, 255, 0.08), transparent 28rem),
+    linear-gradient(180deg, #f8fbff 0%, #f5f8fd 42%, #ffffff 100%);
   color: var(--foreground);
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
@@ -37,4 +39,21 @@ select {
 
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom);
+}
+
+::selection {
+  background: #bce0ff;
+  color: #081d39;
+}
+
+.focus-ring {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(22, 135, 255, 0.18);
+}
+
+.surface-grid {
+  background-image:
+    linear-gradient(rgba(8, 29, 57, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(8, 29, 57, 0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
 }

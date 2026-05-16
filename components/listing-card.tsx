@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { BadgeCheck, PackageCheck } from "lucide-react";
+import { BadgeCheck, PackageCheck, Zap } from "lucide-react";
+import { Badge } from "@/components/ui/primitives";
 import { formatCurrency } from "@/lib/format";
 
 type ListingCardProps = {
@@ -19,8 +20,8 @@ type ListingCardProps = {
 
 export function ListingCard({ listing }: ListingCardProps) {
   return (
-    <Link href={`/anuncio/${listing.slug}`} className="group overflow-hidden rounded-lg border border-blue-100 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-soft">
-      <div className="aspect-[4/3] bg-gradient-to-br from-wisepix-50 to-white">
+    <Link href={`/anuncio/${listing.slug}`} className="group overflow-hidden rounded-lg border border-blue-100 bg-white shadow-sm transition hover:-translate-y-1 hover:border-wisepix-200 hover:shadow-lift">
+      <div className="relative aspect-[4/3] bg-gradient-to-br from-wisepix-50 to-white">
         {listing.images[0] ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={listing.images[0]} alt={listing.title} className="h-full w-full object-cover" />
@@ -29,10 +30,16 @@ export function ListingCard({ listing }: ListingCardProps) {
             <PackageCheck size={44} />
           </div>
         )}
+        <div className="absolute left-2 top-2">
+          <Badge tone={listing.deliveryType === "AUTOMATIC" ? "green" : "blue"}>
+            {listing.deliveryType === "AUTOMATIC" ? <Zap size={12} /> : null}
+            {listing.deliveryType === "AUTOMATIC" ? "Auto" : "Manual"}
+          </Badge>
+        </div>
       </div>
       <div className="space-y-3 p-3">
         <div>
-          <p className="line-clamp-2 min-h-10 text-sm font800 font-bold text-premium-black">{listing.title}</p>
+          <p className="line-clamp-2 min-h-10 text-sm font-bold leading-5 text-premium-black">{listing.title}</p>
           <p className="mt-1 text-xs font-medium text-slate-500">{listing.category?.name ?? "Digital"}</p>
         </div>
         <div className="flex items-end justify-between gap-2">

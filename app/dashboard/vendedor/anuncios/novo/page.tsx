@@ -1,5 +1,6 @@
 import { ListingForm } from "@/components/listing-form";
 import { MobileShell } from "@/components/mobile-shell";
+import { PageHeader } from "@/components/ui/primitives";
 import { requireUser } from "@/lib/guards";
 import { prisma } from "@/lib/prisma";
 
@@ -11,10 +12,7 @@ export default async function NewSellerListingPage() {
 
   return (
     <MobileShell>
-      <div className="mb-5">
-        <h1 className="text-3xl font-black text-wisepix-950">Criar anúncio</h1>
-        <p className="mt-2 text-sm font-medium text-slate-600">Publique um produto digital com preço fixo ou negociável.</p>
-      </div>
+      <PageHeader eyebrow="Vendas" title="Criar anúncio" description="Publique um produto digital com preço, entrega e estoque bem explicados para o comprador." />
       <ListingForm categories={categories} />
     </MobileShell>
   );
